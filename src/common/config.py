@@ -40,3 +40,4 @@ class Settings:
         self.NF_CREDENTIALS = NF_CREDENTIALS
 
 settings = Settings()
+

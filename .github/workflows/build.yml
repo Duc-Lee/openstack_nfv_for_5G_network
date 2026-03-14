@@ -17,3 +17,4 @@ jobs:
         pip install pytest fastapi uvicorn sqlalchemy psycopg2-binary
     - name: Run tests
       run: pytest src/services
+
