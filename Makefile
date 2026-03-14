@@ -1,4 +1,3 @@
-# Makefile dung de chay nhanh cac lenh trong do an
 .PHONY: setup-infra setup-k8s deploy clean build
 
 # 1. Chay Terraform de tao VM

@@ -9,25 +9,13 @@ Dự án này mình làm để tìm hiểu cách triển khai một mạng lõi 
 - **Tối ưu hóa**: Hệ thống có thể tự scale khi lượng người dùng giả lập tăng cao, đảm bảo mạng không bị nghẽn.
 
 ## 2. Mô hình mô phỏng
-Mô hình mình xây dựng tuân thủ theo kiến trúc tách biệt giữa **Luồng điều khiển (Control Plane)** và **Luồng dữ liệu (User Plane)** của 3GPP:
+Mô hình mình xây dựng tập trung vào việc mô phỏng luồng kết nối thực tế trong mạng 5G Core, tuân thủ kiến trúc tách biệt giữa **Luồng điều khiển (Control Plane - CP)** và **Luồng dữ liệu (User Plane - UP)**:
 
-```text
-[ UE ] <--- Radio ---> [ gNB ]
-                         |
-           ----------------------------
-           |                          |
-      (Control Plane)            (User Plane)
-           v                          v
-        [ AMF ] <---- N11 ----> [ SMF ] <---- N4 ----> [ UPF ]
-           |                      |                      |
-           -----------------------------------------------
-                                  |
-                        [ Database (Postgres) ]
-```
-- **Luồng kết nối**: Điện thoại (UE) kết nối vào trạm phát sóng (gNB). gNB sẽ gửi các yêu cầu đăng ký mạng về **AMF**. 
-- **Quản lý phiên**: **SMF** nhận lệnh từ AMF qua giao diện **N11** để thiết lập đường truyền dữ liệu.
-- **Xử lý dữ liệu**: Dữ liệu thực tế của người dùng sẽ đi thẳng qua **UPF**. SMF điều khiển UPF thông qua giao diện **N4**.
-- **Lưu trữ**: Tất cả thông tin thuê bao và cấu hình được quản lý tập trung trong **PostgreSQL**.
+- **Kết nối từ người dùng**: Điện thoại (UE) thông qua trạm phát sóng (gNB) để gửi yêu cầu đăng ký mạng. gNB sẽ giao tiếp trực tiếp với **AMF** (Thành phần quản lý truy cập và di động). Đây là luồng điều khiển chính.
+- **Quản lý phiên và Đường truyền**: Khi UE muốn truy cập internet, **AMF** sẽ chuyển tiếp yêu cầu tới **SMF** (Thành phần quản lý phiên) thông qua giao diện **N11**. SMF có nhiệm vụ quyết định cách thức truyền dữ liệu.
+- **Xử lý dữ liệu thực tế**: Sau khi có quyết định từ SMF, dữ liệu của người dùng sẽ đi thẳng từ gNB qua **UPF** (Thành phần xử lý dữ liệu người dùng) để ra internet. SMF điều khiển UPF này thông qua giao diện **N4**.
+- **Lưu trữ tập trung**: Mọi thông tin về thuê bao, phiên kết nối và cấu hình được lưu trữ thống nhất trong **PostgreSQL** để đảm bảo dữ liệu không bị mất khi các service khởi động lại.
+- **Tự động hóa SRE**: Toàn bộ hệ thống được giám sát bởi các script Python. Các script này sẽ thu thập dữ liệu về hiệu năng và trạng thái của AMF, SMF, UPF để tự động xử lý khi có sự cố.
 
 ## 3. Các thành phần chính
 
