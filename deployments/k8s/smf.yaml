@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smf
+  labels:
+    app: smf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smf
+  template:
+    metadata:
+      labels:
+        app: smf
+      annotations:
+        k8s.v1.cni.cncf.io/networks: control-net
+    spec:
+      containers:
+      - name: smf
+        image: 5g-core-smf:latest
+        ports:
+        - containerPort: 8001
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smf
+spec:
+  selector:
+    app: smf
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8001

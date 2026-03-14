@@ -1,0 +1,71 @@
+# Cai dat Multus CNI
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: multus
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: multus
+rules:
+  - apiGroups: ["k8s.cni.cncf.io"]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/status"]
+    verbs: ["get", "update"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: multus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: multus
+subjects:
+- kind: ServiceAccount
+  name: multus
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-multus-ds
+  namespace: kube-system
+  labels:
+    tier: node
+    app: multus
+spec:
+  selector:
+    matchLabels:
+      name: multus
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: multus
+        name: multus
+    spec:
+      hostNetwork: true
+      serviceAccountName: multus
+      containers:
+      - name: kube-multus
+        image: ghcr.io/k8snetworkplumbingwg/multus-cni:latest
+        command: ["/entrypoint.sh"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: cni
+          mountPath: /etc/cni/net.d
+        - name: cnibin
+          mountPath: /opt/cni/bin
+      volumes:
+        - name: cni
+          hostPath:
+            path: /etc/cni/net.d
+        - name: cnibin
+          hostPath:
+            path: /opt/cni/bin

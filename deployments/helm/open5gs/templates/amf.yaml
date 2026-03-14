@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "open5gs.fullname" . }}-amf
+spec:
+  replicas: {{ .Values.amf.replicaCount }}
+  selector:
+    matchLabels:
+      app: open5gs-amf
+  template:
+    metadata:
+      labels:
+        app: open5gs-amf
+      annotations:
+        k8s.v1.cni.cncf.io/networks: control-net
+    spec:
+      containers:
+      - name: amf
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command: ["open5gs-amfd"]
+        ports:
+        - containerPort: 38412
+          name: n2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "open5gs.fullname" . }}-amf
+spec:
+  selector:
+    app: open5gs-amf
+  ports:
+  - protocol: SCTP
+    port: 38412
+    targetPort: 38412

@@ -1,0 +1,22 @@
+name: Deploy to K8s
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and Deploy
+      run: |
+        echo "Building images..."
+        docker build -t 5g-core-amf:latest src/services/amf
+        docker build -t 5g-core-smf:latest src/services/smf
+        docker build -t 5g-core-upf:latest src/services/upf
+        docker build -t 5g-core-auth:latest src/services/auth_service
+        docker build -t 5g-core-orchestrator:latest src/services/orchestrator
+        docker build -t 5g-core-infra:latest src/services/infra_manager
+        echo "Deploying to k8s..."
+        # kubectl apply -f deployments/k8s/

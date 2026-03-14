@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upf
+  labels:
+    app: upf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upf
+  template:
+    metadata:
+      labels:
+        app: upf
+      annotations:
+        k8s.v1.cni.cncf.io/networks: embb-net, iot-net
+    spec:
+      containers:
+      - name: upf
+        image: 5g-core-upf:latest
+        ports:
+        - containerPort: 8002
+          name: n3
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf
+spec:
+  selector:
+    app: upf
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8002

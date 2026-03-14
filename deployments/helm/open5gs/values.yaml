@@ -1,0 +1,15 @@
+image:
+  repository: open5gs/open5gs
+  tag: latest
+  pullPolicy: IfNotPresent
+amf:
+  replicaCount: 1
+  service:
+    port: 80
+  mgmtIp: "192.168.10.100"
+  controlIp: "10.0.1.100"
+upf:
+  replicaCount: 1
+  userIp: "10.0.10.100"
+mongodb:
+  install: true

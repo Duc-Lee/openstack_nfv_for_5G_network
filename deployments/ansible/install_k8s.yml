@@ -1,0 +1,52 @@
+---
+- name: Install Kubernetes Cluster
+  hosts: all
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  
+  vars:
+    ansible_user: "{{ remote_user }}"
+
+  tasks:
+    - name: Update apt and install dependencies
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+
+    - name: Install Containerd
+      apt:
+        name: containerd
+        state: present
+
+    - name: Add Kubernetes apt key
+      apt_key:
+        url: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_version }}/deb/Release.key"
+        state: present
+
+    - name: Add Kubernetes apt repository
+      apt_repository:
+        repo: "deb https://pkgs.k8s.io/core:/stable:/v{{ k8s_version }}/deb/ /"
+        state: present
+
+    - name: Install K8s components
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+        update_cache: yes
+
+    - name: Initialize K8s cluster (Master only)
+      command: "kubeadm init --pod-network-cidr={{ pod_network_cidr }}"
+      when: inventory_hostname in groups['masters']
+      register: kubeadm_init
+
+    - name: Install CNI Filter (Flannel)
+      command: "kubectl apply -f {{ cni_url }}"
+      when: inventory_hostname in groups['masters']

@@ -1,0 +1,60 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "5G Core: Total Requests (AMF/SMF)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "amf_requests_total", "legendFormat": "AMF Requests" },
+        { "expr": "smf_sessions_total", "legendFormat": "SMF Sessions" }
+      ]
+    },
+    {
+      "title": "UPF: Data Throughput (GB)",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "upf_data_forwarded_gb", "legendFormat": "Throughput" }
+      ]
+    },
+    {
+      "title": "Service Logs (Loki)",
+      "type": "logs",
+      "datasource": "Loki",
+      "targets": [
+        { "expr": "{job=\"5g-core\"}" }
+      ]
+    }
+  ],
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": ["5G", "NFV", "Core"],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "title": "5G Cloud NFV Overview",
+  "uid": "5g-core-obs",
+  "version": 1
+}

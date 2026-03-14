@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: amf-smf-functions
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: fiveg-control
+    template:
+      metadata:
+        labels:
+          app: fiveg-control
+      spec:
+        containers:
+        - name: amf
+          image: free5gc/amf:latest
+        - name: smf
+          image: free5gc/smf:latest
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: upf-function
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: fiveg-user
+    template:
+      metadata:
+        labels:
+          app: fiveg-user
+      spec:
+        containers:
+        - name: upf
+          image: free5gc/upf:latest
+          securityContext:
+            privileged: true

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "open5gs.fullname" . }}-upf
+spec:
+  replicas: {{ .Values.upf.replicaCount }}
+  selector:
+    matchLabels:
+      app: open5gs-upf
+  template:
+    metadata:
+      labels:
+        app: open5gs-upf
+      annotations:
+        k8s.v1.cni.cncf.io/networks: embb-net, iot-net
+    spec:
+      containers:
+      - name: upf
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command: ["open5gs-upfd"]
+        ports:
+        - containerPort: 2152
+          name: n3

@@ -1,0 +1,62 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: control-net
+  namespace: default
+spec:
+  config: '{
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "master": "eth1",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "10.0.1.10/24"
+          }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: embb-net
+  namespace: default
+spec:
+  config: '{
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "master": "eth2",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "10.0.10.10/24"
+          }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: iot-net
+  namespace: default
+spec:
+  config: '{
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "master": "eth3",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "10.0.20.10/24"
+          }
+        ]
+      }
+    }'

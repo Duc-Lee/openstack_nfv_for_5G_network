@@ -1,0 +1,23 @@
+# UERANSIM Configuration for Multi-Slice 5G
+gnb:
+  mcc: '001'
+  mnc: '01'
+  nci: '0x000000010'
+  idLength: 32
+  tac: 1
+  linkIp: 10.0.1.10    # Control Plane Interface (Multus)
+  ngapIp: 192.168.10.20 # Management Interface
+  gtpIp: 10.0.10.20    # eMBB User Plane Interface
+  
+ue:
+  supi: 'imsi-001010000000001'
+  key: '465B5CE8B199B49FAA5F0A2EE238A6BC'
+  op: 'E8ED289DEBA952E4283B54E88E6183CA'
+  amf: 192.168.10.100  # AMF Management IP
+  gnbSearchList:
+    - 192.168.10.20
+  slices:
+    - sst: 1
+      sd: 0x000001 # eMBB Slice
+    - sst: 2
+      sd: 0x000002 # IoT Slice
